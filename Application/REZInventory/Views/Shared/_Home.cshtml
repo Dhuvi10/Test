@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>@ViewBag.Title - REZInventory</title>
+
+    <link href="~/Content/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/_all-skins.css" rel="stylesheet" />
+    <link href="~/Content/AdminLTE.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/Ionicons/css/ionicons.min.css" rel="stylesheet" />
+    <link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
+    <style>
+        span.logo-lg {
+            display: none;
+        }
+
+        section {
+            font-size: smaller;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .nav-tabs .dropdown-menu, .nav-pills .dropdown-menu, .navbar .dropdown-menu {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body class="hold-transition skin-blue layout-top-nav">
+    <div class="wrapper">
+        <!-- Left side column. contains the logo and sidebar -->
+        <!-- Main content -->
+        <div class="content-wrapper">
+            @RenderBody()
+        </div>
+        <!-- /.content -->
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                <strong>Powered by TechRyde. </strong>All rights reserved.
+            </div>
+            &nbsp;
+        </footer>
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Create the tabs -->
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+                <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+                <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <!-- Home tab content -->
+                <!-- /.tab-pane -->
+                <!-- Stats tab content -->
+                <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
+                <!-- /.tab-pane -->
+                <!-- Settings tab content -->
+                <div class="tab-pane" id="control-sidebar-settings-tab">
+                </div>
+                <!-- /.tab-pane -->
+            </div>
+        </aside>
+        <div class="control-sidebar-bg"></div>
+    </div>
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+
+    <script src="~/Scripts/dist/js/bootstrap-select.min.js"></script>
+    @*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dist/js/core-min.js"></script>
+    <script src="~/Scripts/dist/js/sha256.js"></script>
+    <script src="~/Scripts/dist/js/enc-base64-min.js"></script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

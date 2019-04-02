@@ -1,0 +1,102 @@
+﻿@model REZCores.RegisterModel
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+@*<h2>Register</h2>*@
+<section class="content">
+    @using (Html.BeginForm("Register", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "formRegister" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="container body-content">
+            <div class="login-box">
+                <div class="login-logo">
+                    <a><b>REZ</b>Inventory</a>
+                </div>
+                <!-- /.login-logo -->
+                <div class="login-box-body">
+                    <p class="login-box-msg">Sign in</p>
+                    <hr>
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.EncryptedPassword)
+             
+                    <div class="form-group has-feedback">
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", @placeholder = "First Name" })
+                        @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
+                        <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @placeholder = "Last Name" })
+                        @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
+                        <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "Email" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", @placeholder = "Phone Number" })
+                        @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+                        <span class="glyphicon glyphicon-phone form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm Password" })
+                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            @*@Html.CheckBoxFor(m => m.RememberMe)
+                @Html.LabelFor(m => m.RememberMe)*@
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-xs-4"><input type="submit" value="Save" class="btn btn-default" /> </div>
+                        <!-- /.col -->
+                    </div>
+                </div>
+                <!-- /.login-box-body -->
+            </div>
+        </div>
+    }
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script>
+     $(document).ready(function () {
+ 
+    function ForgotPassword() {
+        //$('#myForgotPassword').modal('show');
+        var url = "@Url.Action("ForgotPassword", "Login")";
+        window.location.href = url;
+        //return false;
+        }
+    });
+
+
+            $("#formRegister").submit(function () {
+        var username = $('#Email').val().toLowerCase();
+        var password = $('#Password').val();
+        var RnD = $('#hdnRandomKey').val();
+        if (password == "") {
+            $('#EncryptedPassword').val(null);
+        }
+        else {
+            var abc = (username + password);
+            var hash = CryptoJS.SHA256(username + password);
+            var Newhash = CryptoJS.SHA256(RnD + hash);
+            $('#EncryptedPassword').val(Newhash);
+            //$('#Password').val(Newhash);
+
+        }
+        return true;
+    });
+        </script>
+    }
+</section>
+
+

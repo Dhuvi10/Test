@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>@ViewBag.Title - REZInventory</title>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/_all-skins.css" rel="stylesheet" />
+    <link href="~/Content/AdminLTE.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/Ionicons/css/ionicons.min.css" rel="stylesheet" />
+    <link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
+
+
+    <style>
+        span.logo-lg {
+            display: none;
+        }
+        section{
+            font-size:smaller;
+        } 
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        .nav-tabs .dropdown-menu, .nav-pills .dropdown-menu, .navbar .dropdown-menu {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body class="hold-transition skin-blue layout-top-nav">
+
+
+
+    <div class="wrapper">
+    
+       
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container" style="width:auto;">
+                        <div class="navbar-header" style="display:block;">
+                            <a href="~/Home/index" class="navbar-brand"><b>REZ</b>Inventory</a>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                        </div>
+                       
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+
+                            @if (ViewBag.Menu != null)
+                            {
+                                <ul class="nav navbar-nav">
+                                    @{
+
+
+                                        var MID = ((IEnumerable<REZCores.MenuModel>)ViewBag.Menu).Select(c => c).OrderBy(c => c.ParentId).ToList();
+                                    }
+                                    @MenuLabel.GetTreeView(@MID, MID.FirstOrDefault().ParentId)
+                                </ul>
+                            }
+                            @*<li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Masters <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                <li id="unit">@Html.ActionLink("Unit", "Index", "Unit")</li>
+                <li id="major">@Html.ActionLink("Major Names", "Index", "MajorItems")</li>
+                <li id="minor">@Html.ActionLink("Minor Names", "Index", "MinorItems")</li>
+                <li id="store">@Html.ActionLink("Cost Center", "Index", "Store")</li>
+                <li id="WasteReason">@Html.ActionLink("Waste Reason Master", "Index", "WasteReason")</li>
+                <li id="vendor">@Html.ActionLink("Vendor", "Index", "Vendor")</li>
+            </ul>
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Mapping <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                <li id="minor">@Html.ActionLink("Master Menu", "MasterMenuList", "MenuStoremapping")</li>
+                <li id="minor">@Html.ActionLink("Menu-Store", "MenuList", "MenuStoremapping")</li>
+                <li id="minor">@Html.ActionLink("Menu-Recipe", "Index", "MenuRecipe")</li>
+                <li id="Production">@Html.ActionLink("Production Recipe", "Index", "MappingRecipeProdItem")</li>
+            </ul>
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operations <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                <li id="vendor">@Html.ActionLink("Stock Taking", "Index", "StockTaking")</li>
+                <li id="vendor">@Html.ActionLink("Ordering", "Index", "Order")</li>
+                <li id="vendor">@Html.ActionLink("Receiving", "Index", "Receiving")</li>
+                <li id="vendor">@Html.ActionLink("Transfer In", "Index", "StockReq")</li>
+                <li id="vendor">@Html.ActionLink("Transfer Out", "Index", "StockTransfer")</li>
+
+                <li id="vendor">@Html.ActionLink("Raw Waste", "Index", "WasteDetails")</li>
+                <li id="vendor">@Html.ActionLink("Complete Waste", "MenuWasteList", "WasteDetails")</li>
+                <li id="vendor">@Html.ActionLink("Stock On Hand", "Index", "StockOnHand")</li>
+                <li id="Production">@Html.ActionLink("Production Booking", "Index", "Production")</li>
+            </ul>
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Report <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+                @*<li id="vendor">@Html.ActionLink("Waste By Group", "WasteReportByGroup", "WasteDetails")</li>
+                            <li id="vendor">@Html.ActionLink("Waste Report", "WasteReportByItem", "WasteDetails")</li>
+                            <li id="vendor">@Html.ActionLink("COS Report", "COSByCostCenters", "StockOnHand")</li>
+                            <li id="vendor">@Html.ActionLink("Theo Quantity", "Index", "TheoQuantity")</li>
+                            <li id="vendor">@Html.ActionLink("Variance Report", "rptVariance", "Variance")</li>
+                            <li id="vendor">@Html.ActionLink("Sale Report", "Index", "SaleReport")</li>
+                            <li id="vendor">@Html.ActionLink("Ingredient Linking Report", "IngredientLinking", "SaleReport")</li>
+                            </ul>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Index", "InventoryItems")">
+                                    Inventory Items
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Index", "Recipe")">
+                                    Recipe
+                                </a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuration <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li id="vendor">@Html.ActionLink("System Setting", "Configuration", "SystemConnfiguration")</li>
+                                    <li id="vendor">@Html.ActionLink("Master Store", "Index", "MasterStore")</li>
+                                    <li id="vendor">@Html.ActionLink("Tax", "Index", "Tax")</li>
+                                    <li id="vendor">@Html.ActionLink("Tax Class", "Index", "TaxClass")</li>
+                                </ul>
+                            </li>
+
+                            </ul>*@
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                        <div class="navbar-custom-menu">
+                            <ul class="nav navbar-nav">
+                                <!-- Messages: style can be found in dropdown.less-->
+                                <!-- /.messages-menu -->
+                                <!-- Notifications Menu -->
+                                <!-- Tasks Menu -->
+                                <!-- User Account Menu -->
+                                <li class="dropdown user user-menu">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                        <!-- The user image in the navbar-->
+                                        <img src="~/Content/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                                        <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                                        <span> @User.Identity.Name</span>
+                                        <ul class="dropdown-menu" role="menu" style="width:0px; background:center;">
+                                            <!-- The user image in the menu -->
+                                            <li style="float:right; ">
+                                                <a href="@Url.Action("LogOff", "Account")">
+                                                    SignOff
+                                                </a>
+                                            </li>
+                                            @*<li style="float:right; ">
+                                <a href="@Url.Action("ResetPassword", "Account")">
+                                    Reset Password
+                                </a>
+                            </li>*@
+
+
+                                            <!-- Menu Body -->
+                                        </ul>
+
+                                    </a>
+                                </li>                          <!-- Menu Toggle Button -->
+                            </ul>
+                        </div>
+                        <!-- /.navbar-custom-menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+        
+        <!-- Left side column. contains the logo and sidebar -->
+        <!-- Main content -->
+        <div class="content-wrapper">
+            @RenderBody()
+        </div>
+        <!-- /.content -->
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                <strong>Powered by TechRyde. </strong>All rights reserved.
+            </div>
+            &nbsp;
+        </footer>
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Create the tabs -->
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+                <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+                <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <!-- Home tab content -->
+                <!-- /.tab-pane -->
+                <!-- Stats tab content -->
+                <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
+                <!-- /.tab-pane -->
+                <!-- Settings tab content -->
+                <div class="tab-pane" id="control-sidebar-settings-tab">
+                </div>
+                <!-- /.tab-pane -->
+            </div>
+        </aside>
+        <!-- /.control-sidebar -->
+        <!-- Add the sidebar's background. This div must be placed
+        immediately after the control sidebar -->
+        <div class="control-sidebar-bg"></div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+
+    <script src="~/Scripts/dist/js/bootstrap-select.min.js"></script>
+    @*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

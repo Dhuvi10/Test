@@ -1,0 +1,300 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<section class="content">
+    <ol class="breadcrumb">
+        <li>Operation</li>
+        <li class="active">Stock Taking List</li>
+    </ol>
+
+    <p>
+        @Html.ActionLink("+ Add", "Create", new { }, new { @class = "btn btn-primary" })
+    </p>
+
+    <div class="box box-primary">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <b>Select Cost Center:</b> <span style="color: red;">* </span>
+                    @Html.DropDownList("Store", null, "Cost Center", htmlAttributes: new { @class = "form-control" })
+                </div>
+                <div class="col-md-3">
+                    <b>Select Date:</b> <span style="color: red;">* </span>
+                    <select id="ddlDate" class="form-control">
+                        <option value="0">Select Date</option>
+                        <option value="1">Current Year</option>
+                        <option value="2">Current Month</option>
+                        <option value="3">Last Year</option>
+                        <option value="4">Last Month</option>
+                        <option value="5">User Defined</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <b>Select Stock Taking Type:</b>
+                    @Html.DropDownList("StockTakenType", null, "Stock Taking Type", htmlAttributes: new { @class = "form-control" })
+                </div>
+                <div class="col-md-2" style="margin-top: 4px;">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div id="divFromDate" class="col-md-3 hidden">
+                    <b>From Date:</b> <span style="color: red;">* </span>
+
+                    <input type="text" id="txtFromDate" class="form-control mytablecell" placeholder='From Date' autocomplete="off">
+
+
+                </div>
+                <div id="divToDate" class="col-md-3 hidden">
+                    <b>To Date:</b> <span style="color: red;">* </span>
+                    <input type="text" id="txtToDate" class="form-control mytablecell" placeholder='To Date' autocomplete="off" />
+                </div>
+                <div class="col-md-2" style="margin-top: 4px;">
+                    <br />
+                    <button id="btnSearch" class="btn btn-primary" onclick="GetStockTaking();">Search</button>
+                    <a id="get-excel" class="btn btn-primary">Get excel</a>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+
+        <div class="box-body" style="overflow-x:auto; ">
+
+            <div id="tblResult">
+            </div>
+
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    <link href="~/Scripts/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    @*<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">*@
+    <link rel="stylesheet" href="~/Content/jquery-ui.css">
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <script>
+        function GetStockTaking() {
+            var fromdate = "";
+            var todate = "";
+            var StoreId = $('#Store').val();
+            var DateId = $('#ddlDate').val();
+            var ddStockTakingType = $('#StockTakenType').val();
+            if (DateId == "1") {
+                var d = new Date(),
+                    y = d.getFullYear();
+                fromdate = "01-01-" + y;
+                todate = "12-31-" + y;
+            }
+            else if (DateId == "2") {
+                var d = new Date(),
+                    m = d.getMonth() + 1,
+                    y = d.getFullYear();
+                var dd = "";
+                var mm = "";
+                var yy = "";
+                if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) { dd = 31; mm = m; yy = y }
+                else if (m == 4 || m == 6 || m == 9 || m == 11) { dd = 30; mm = m; yy = y }
+                else if (m == 2 && y % 4 == 0) { dd = 29; mm = m; yy = y }
+                else if (m == 2 && y % 4 != 0) { dd = 28; mm = m; yy = y }
+                fromdate = m.toString() + "-01-" + y;
+                todate = mm + "-" + dd + "-" + yy;
+
+            }
+            else if (DateId == "3") {
+                var d = new Date(),
+                    y = d.getFullYear() - 1;
+                fromdate = "01-01-" + y;
+                todate = "12-31-" + y;
+
+            }
+            else if (DateId == "4") {
+                var d = new Date(),
+                    m = d.getMonth(),
+                    y = d.getFullYear();
+                var dd = "";
+                var mm = "";
+                var yy = "";
+                if (m == 0) { dd = 31; mm = 12; yy = y - 1 }
+                else if (m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) { dd = 31; mm = m; yy = y }
+                else if (m == 4 || m == 6 || m == 9 || m == 11) { dd = 30; mm = m; yy = y }
+                else if (m == 2 && y % 4 == 0) { dd = 29; mm = m; yy = y }
+                else if (m == 2 && y % 4 != 0) { dd = 28; mm = m; yy = y }
+
+                fromdate = mm + "-01-" + yy;
+                todate = mm + "-" + dd + "-" + yy;
+            }
+            else if (DateId == "5") {
+                fromdate = $('#txtFromDate').val();
+                todate = $('#txtToDate').val();
+            }
+            if (StoreId == "0") { alert("Please select Cost Center"); return false; }
+            else if (DateId == "0") { alert("Please select Date"); return false; }
+            else if (DateId == "5" && fromdate == "") { alert("Please enter from date"); return false; }
+            else if (DateId == "5" && todate == "") { alert("Please enter to date"); return false; }
+
+            else {
+                var obj = {};
+                obj.StoreId = StoreId;
+                obj.FromDate = fromdate;
+                obj.Todate = todate;
+                obj.StocktakingTypeId = ddStockTakingType;
+                $.ajax({
+                    type: "POST",
+                    url: "/StockTaking/GetStockTaken",
+                    data: JSON.stringify(obj),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response, status) {
+                        BindData(response);
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+        }
+
+        function BindData(response) {
+            var model = $.parseJSON(response.success);
+            $("#tblResult").empty();
+            // create table
+            var $table = $('<table>');
+            // thead
+            $table.append('<thead>').children('thead')
+                .append('<tr />').children('tr').append('<th><b>Business Date</b></th><th><b>Cost Center</b></th><th><b>Stock Taking Type</b></th><th><b> Actual amount</b></th><th><b>Theo amount</b></th><th><b> Variance amount</b></th><th><b>Status</b></th><th><b>Action</b></th>');
+
+            //tbody
+            var $tbody = $table.append('<tbody />').children('tbody');
+            if (model.length > 0) {
+                for (var i = 0; i < model.length; i++) {  
+                    var st = model[i].Status.toString() == "1" ? "Pending" : model[i].Status.toString() == "2" ? "Saved" : "Booked";
+                    var txt = model[i].Status.toString() == "3" ? "View" : "Edit";
+                    var dt =   model[i].BDate.substring(0, 10).split("-")
+                    $tbody.append('<tr />').children('tr:last')                 
+                        .append("<td>" + dt[1]+'-' + dt[2] +'-'+ dt[0]  + "</td>")
+                        .append("<td> " + model[i].StoreName + "</td>")
+                        .append("<td> " + model[i].StocktakingType + "</td>")
+                        .append("<td> " + model[i].ActualAmount + "</td>")
+                        .append("<td> " + model[i].TheoAmount + "</td>")
+                        .append("<td> " + model[i].VarAmount + "</td>")
+                        .append("<td> " + st + "</td>")
+                        .append("<td><a href='/StockTaking/CountSheet?StockTakingId=" + model[i].StockTakingId + "'>" + txt+"</a></td>")                }
+            }
+            // add table to dom
+            $table.appendTo('#tblResult');
+            $('#tblResult table').addClass("table table-bordered table-condensed table-hover table-striped");
+            $('.table').DataTable();
+        }
+
+        $("#ddlDate").change(function () {
+            var val = $(this).find('option:selected').val();
+            if (val == 5) {
+                $("#divFromDate").removeClass('hidden');
+                $("#divToDate").removeClass('hidden');
+            }
+
+            else {
+                $("#divFromDate").addClass('hidden');
+                $("#divToDate").addClass('hidden');
+            }
+
+        });
+
+        $(document).ready(function () {
+          //  StoreDetails();
+            $('body').on('focus', ".mytablecell", function () {
+                $(this).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    maxDate: 0,
+                    dateFormat: 'mm/dd/yy'
+                });
+            });
+            $(".mytablecell").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                maxDate: 0,
+                dateFormat: 'mm/dd/yy'
+            });
+
+            $("#get-excel").click(function () {
+                var FilterList = "";
+                var fromdate = "";
+                var todate = "";
+                var StoreId = $('#ddlStore').val();
+                var DateId = $('#ddlDate').val();
+                var ddStockTakingType = $('#ddStockTakingType').val();
+                if (DateId == "1") {
+                    var d = new Date(),
+                        y = d.getFullYear();
+                    fromdate = "01-01-" + y;
+                    todate = "12-31-" + y;
+                }
+                else if (DateId == "2") {
+                    var d = new Date(),
+                        m = d.getMonth() + 1,
+                        y = d.getFullYear();
+                    var dd = "";
+                    var mm = "";
+                    var yy = "";
+                    if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) { dd = 31; mm = m; yy = y }
+                    else if (m == 4 || m == 6 || m == 9 || m == 11) { dd = 30; mm = m; yy = y }
+                    else if (m == 2 && y % 4 == 0) { dd = 29; mm = m; yy = y }
+                    else if (m == 2 && y % 4 != 0) { dd = 28; mm = m; yy = y }
+                    fromdate = m.toString() + "-01-" + y;
+                    todate = mm + "-" + dd + "-" + yy;
+
+                }
+                else if (DateId == "3") {
+                    var d = new Date(),
+                        y = d.getFullYear() - 1;
+                    fromdate = "01-01-" + y;
+                    todate = "12-31-" + y;
+
+                }
+                else if (DateId == "4") {
+                    var d = new Date(),
+                        m = d.getMonth(),
+                        y = d.getFullYear();
+                    var dd = "";
+                    var mm = "";
+                    var yy = "";
+                    if (m == 0) { dd = 31; mm = 12; yy = y - 1 }
+                    else if (m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) { dd = 31; mm = m; yy = y }
+                    else if (m == 4 || m == 6 || m == 9 || m == 11) { dd = 30; mm = m; yy = y }
+                    else if (m == 2 && y % 4 == 0) { dd = 29; mm = m; yy = y }
+                    else if (m == 2 && y % 4 != 0) { dd = 28; mm = m; yy = y }
+
+                    fromdate = mm + "-01-" + yy;
+                    todate = mm + "-" + dd + "-" + yy;
+                }
+                else if (DateId == "5") {
+                    fromdate = $('#txtFromDate').val();
+                    todate = $('#txtToDate').val();
+                }
+                if (StoreId == "0") { alert("Please select Cost Center"); return false; }
+                else if (DateId == "0") { alert("Please select Date"); return false; }
+                else if (DateId == "5" && fromdate == "") { alert("Please enter from date"); return false; }
+                else if (DateId == "5" && todate == "") { alert("Please enter to date"); return false; }
+                else {
+                    FilterList = "From Date|" + fromdate + ";Todate|" + todate+ ";Store Name|" + $("#ddlStore :selected").text();
+                    if (ddStockTakingType == !0) { FilterList = FilterList + ";Stock TakingType|" + $("#ddStockTakingType :selected").text();}
+                    var Qtype = "StockTakenList";
+                    var TitleName = "Stock taken list";
+                    var FileName = "StockTakenList";
+                    var id3 = 0;
+                    window.location.href = '@Url.Action("ReportExcel", "ExcelExport")?Qtype=' + Qtype + '&TitleName=' + TitleName + '&FileName=' + FileName + '&Id1=' + StoreId + '&Id2=' + ddStockTakingType + '&Id3=' + id3 + '&Fdate=' + fromdate + '&Tdate=' + todate + '&FilterList=' + FilterList;
+                     }
+
+             });
+        });
+    </script>
+</section>
+

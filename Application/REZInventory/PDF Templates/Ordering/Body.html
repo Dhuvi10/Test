@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body style="font-family: Arial,Helvetica,sans-serif; font-size: 7px;">
+    <form id="form1" runat="server">
+        <!--pdf table-->
+        <table width="100%" border="0">
+            <tr>
+                <td colspan="10">
+                    <table width="100%" border="0" cellpadding="2">
+                        <tr>
+                            <td colspan="7"></td>
+                            <td colspan="3" align="right">
+                                <table border="1">
+                                    <tr>
+                                        <td>
+                                            <table border="0">
+                                                <tr>
+                                                    <td align="left"><b>Purchase Order</b></td>
+
+                                                    <td align="left">[PONumber]</td>
+                                                </tr>
+                                            </table>
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="10" align="left"><img src="[Images]" align="left" alt="" height="80px" width="130px" style="margin-left:5px;" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">
+                                <b>Vendor</b>
+                                <table border="0">
+                                    <tr>
+                                        <td bgcolor="gray">
+                                            <p><b>[Vendor Address]</b></p>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table>
+                                    <tr>
+                                        <td><span style='font-weight:bold;'>Cust No:</span></td>
+                                        <td>
+                                            [CUSTNO]
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span style='font-weight:bold;'>GST No:</span></td>
+                                        <td>
+                                            [GST]
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span style='font-weight:bold;'>FAX:</span></td>
+                                        <td>
+                                            [FAX]
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span style='font-weight:bold;'>Telephone:</span></td>
+                                        <td>
+                                            [Telephone]
+                                        </td>
+                                    </tr>
+                                </table>
+
+
+
+
+                            </td>
+
+                            <td colspan="5">
+                                <b>Billing Address</b>
+                                <table border="0">
+                                    <tr>
+                                        <td bgcolor="gray" height="100">
+                                            <p><b>[Billing Address]</b></p>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table>
+                                    <tr>
+                                        <td><span style='font-weight:bold;'>Order Date:</span></td>
+                                        <td>
+                                            [OrderDate]
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span style='font-weight:bold;'>Orderer:</span></td>
+                                        <td>
+                                            [Orderer]
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span style='font-weight:bold;'>Email:</span></td>
+                                        <td>
+                                            [Email]
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><span style='font-weight:bold;'>Telephone:</span></td>
+                                        <td>
+                                            [Telephone]
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="10">___________________________________________________________________________________________________________________________________________</td>
+                        </tr>
+
+                    </table>
+                </td>
+            </tr>
+
+
+        </table>
+
+
+        <table border="0" cellpadding="1">
+            <tr>
+                <td colspan="10">
+                    <table border="0" cellpadding="0">
+                        <tr>
+                            <td>Delivery Date</td>
+                            <td colspan="3">[Date]</td>
+                            <td colspan="2">Cost Centre</td>
+                            <td colspan="4">[CostCentre]</td>
+                        <tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        [TableItems]
+        <!--pdf table end-->
+    </form>
+</body>
+</html>

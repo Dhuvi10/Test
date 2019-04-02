@@ -1,0 +1,304 @@
+﻿@model REZCores.StockTakenModel
+@{
+    ViewBag.Title = "CountSheet";
+}
+<style>
+    .changecolor {
+        color: red
+    }
+</style>
+<section class="content">
+
+    <ol class="breadcrumb">
+        <li>Operation</li>
+        <li>@Html.ActionLink("Stock Taking", "Index", "StockTaking")</li>
+        <li class="active">Book Count Sheet</li>
+    </ol>
+    <div class="form-horizontal col-md-12">
+        <div id="divdetail" class="form-group">
+            <div class="col-md-1">
+                <b>Business Date:</b><br />
+                @{
+                    string Date = Model.BDate.ToShortDateString();
+                }
+                @Date
+            </div>
+            <div class="col-md-2">
+                <b>Cost Center:</b><br />
+                @Model.StoreName
+            </div>
+
+            <div class="col-md-2">
+                <b>Stock Taking Type:</b><br />
+                @Model.StocktakingType
+            </div>
+            <div class="col-md-1">
+                <b>Status:</b><br />
+                @{var st = Model.Status == 1 ? "Pending" : Model.Status == 2 ? "Saved" : "Booked";}
+                @st
+            </div>
+            <div class="col-md-2">
+                <b>Created By:</b><br />
+                @Model.CreatedBy
+            </div>
+            <div class="col-md-1">
+                <b>Created On:</b><br />
+                @Model.CreatedOn
+
+            </div>
+            <div class="col-md-2">
+                <b>Modified By:</b><br />
+                @Model.ModifiedBy
+            </div>
+            <div class="col-md-1">
+                <b>Modified On:</b><br />
+                @Model.ModifiedOn
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="box box-pane"></div>
+            @Html.HiddenFor(model => model.StockTakingId)
+            @Html.HiddenFor(model => model.StocktakingTypeId)
+            @Html.HiddenFor(model => model.StoreId)
+            @Html.HiddenFor(model => model.InventoryTime)
+            @Html.HiddenFor(model => model.BDate)
+            @if (Model.Status != 3)
+            {
+                <input type="button" id="btnSave" onclick="return SaveIStockTaking();" value="Save" class="btn btn-default" />
+                <input type="button" id="btnBook" onclick="return BookStockTaking();" value="Book" class="btn btn-default" />
+            }
+            @Html.ActionLink("Back", "Index", new { }, new { @class = "btn btn-default" })
+            <button id="btnGetExcel" value="GetExcel" class="btn btn-default" onclick="GetExcel();">Get Excel</button>
+
+        </div>
+        <div class="form-group">
+            <div class="box box-primary">
+                <div class="box-body" style="overflow:auto;max-height:400px">
+                    <table class="table" id="tblResult">
+                        <thead>
+                            <tr>                               
+                                <th>Item ID</th>
+                                <th>Item Name</th>
+                                <th>Count Qty</th>
+                                <th>Unit</th>
+                                <th>Actual Qty</th>
+                                <th>Actual Amount</th>
+                                <th>Theo Qty</th>
+                                <th>Theo Amount</th>
+                                <th>Var Qty</th>
+                                <th>Var Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (@Model.lstCountSheetModel != null)
+                            {
+                                foreach (var item in @Model.lstCountSheetModel)
+                                {
+                                    <tr>                                     
+                                        <td>@item.ItemCode<input type="text" class="hidden" value=@item.ItemId maxlength="10" /></td>
+                                        <td>@item.ItemName<input type="text" class="hidden" value=@item.YesterdayActQty maxlength="10" /></td>
+                                        <td><input type="text" class="qty" value=@item.Qty maxlength="10" />  </td>
+                                        <td>@item.UnitName</td>
+                                        <td class="Aqty">@item.ActualQty</td>
+                                        <td>@item.ActualAmount</td>
+                                        <td class="Sqty">@item.SaleQty</td>
+                                        <td>@item.TheoAmount</td>
+                                        <td class="Vqty"><label class="form-line" value=@item.VarQty></label> </td>
+                                        <td>@item.VarAmount</td>
+
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Total</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th> @Model.ActualAmount</th>
+                                <th></th>
+                                <th>@Model.TheoAmount</th>
+                                <th></th>
+                                <th>@Model.VarAmount</th>
+
+                            </tr>
+
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="glow-alert" style="display: none;"></div>
+    <iframe id="txtArea1" style="display:none"></iframe>
+    @Scripts.Render("~/bundles/jquery")
+    <link href="~/Scripts/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-duallistbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.bootstrap-duallistbox.js"></script>
+    <script>
+        $('.qty').focusout(function (e) {
+            var varianceallow = $("#VarianceMasterValue").val();
+            var parent = $(this).parents('tr');
+            // var VQty = $('.Vqty', parent).get(0).innerHTML || 0;
+            var SQty = $('.Sqty', parent).get(0).innerHTML || 0;
+            var AQty = $('.Aqty', parent).get(0).innerHTML || 0;
+            var IQty = this.value;
+            var Interval = 0;
+            var VQty = AQty - IQty - SQty;
+            Interval = VQty * 100 / AQty;
+            parent.find(".form-line").text(VQty);
+            // parent.find(".Vqty").(VQty);
+            //  $('.Aqty', parent).add().val(VQty);
+            //var price = $('.price', parent);
+
+            if (Interval > varianceallow) {
+                $('.price', parent).removeClass('changecolor');
+                parent.find(".form-line").removeClass('changecolor');
+                //$(this).closest('tr').next().find('input.qty').focus();
+            }
+            else {
+                $('.price', parent).addClass('changecolor');
+                parent.find(".form-line").addClass('changecolor');
+                //$(this).closest('tr').next().find('input.qty').focus();
+            }
+        })
+
+    </script>
+    <script>
+        function alertGlow(msg) {
+            $(".glow-alert").html(msg);
+            $(".glow-alert").delay(200).fadeIn().delay(4000).fadeOut();
+        };
+        function SaveIStockTaking() {
+            var ItemList = "";
+            $('#tblResult tr').each(function (i, r) {
+                if (i > 0) {
+                   
+                    var vItemId = $(this).find("td").eq(0).find(":text").val();
+                    var YQty = $(this).find("td").eq(1).find(":text").val();
+                    var vQty = $(this).find("td").eq(2).find(":text").val();
+                    if (vQty != "") {
+                        ItemList += "," + vItemId + "|" + vQty + "|" + YQty;
+                    }
+                }
+            })
+            var obj = {};
+            obj.StoreId = $("#StoreId").val();
+            obj.StocktakingTypeId = $("#StocktakingTypeId").val();
+            obj.InventoryTime = $("#InventoryTime").val();
+            obj.BDate = $("#BDate").val();
+            obj.Status = 2;
+            obj.StockTakingId = $("#StockTakingId").val();
+            obj.strCountSheetModel = ItemList;
+            Savedata(obj);
+        }
+
+        function BookStockTaking() {
+            var ItemList = "";
+
+            $('#tblResult tr').each(function (i, r) {
+                if (i > 0) {
+                    var vItemId = $(this).find("td").eq(0).find(":text").val();
+                    var YQty = $(this).find("td").eq(1).find(":text").val();
+                    var vQty = $(this).find("td").eq(2).find(":text").val();
+                    if (vQty != "") {
+                        ItemList += "," + vItemId + "|" + vQty + "|" + YQty;
+                    }
+                }
+            })
+
+            var obj = {};
+            obj.StoreId = $("#StoreId").val();
+            obj.StocktakingTypeId = $("#StocktakingTypeId").val();
+            obj.InventoryTime = $("#InventoryTime").val();
+            obj.BDate = $("#BDate").val();
+            obj.Status = 3;
+            obj.StockTakingId = $("#StockTakingId").val();
+            obj.strCountSheetModel = ItemList;
+            Savedata(obj);
+        }
+
+        function Savedata(obj) {
+            $.ajax({
+                type: "POST",
+                url: "/StockTaking/Create",
+                data: JSON.stringify(obj),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response, status) {
+                    if (response.success) {
+                        //alertGlow('Count Sheet Submit Successfully')
+                        alert("Count Sheet Submit Successfully");
+                        window.location.href = '/StockTaking/Index';
+                    }
+                    
+                },
+                failure: function (response) {
+                    alertGlow(response.responseText);
+                },
+                error: function (response) {
+                    alertGlow(response.responseText);
+                }
+            });
+            return false;
+        }
+
+
+
+
+        function GetExcel() {
+            var tab_text = '<table border="1px" style="font-size:20px" ">';
+            var textRange;
+            var j = 0;
+            var tab = document.getElementById('tblResult'); // id of table
+            var lines = tab.rows.length;
+            var hdr = document.getElementById('divdetail').innerHTML;
+            hdr = hdr.replace(/<div[^>]*>|<\/div>/g, ""); 
+            hdr = hdr.replace(/<br[^>]*>|<\/br>/g, ""); 
+         
+            tab_text = '<table><tr><td colspan="10">' + hdr + '</td></tr><tr></tr></table>' + tab_text ;
+          
+            // the first headline of the table
+            if (lines > 0) {
+                tab_text = tab_text + '<tr bgcolor="#DFDFDF">' + tab.rows[0].innerHTML + '</tr>';
+                
+            }
+
+            // table data lines, loop starting from 1
+            for (j = 1; j < lines; j++) {
+                tab_text = tab_text + "<tr>" + tab.rows[j].innerHTML + "</tr>";
+            }
+
+            tab_text = tab_text + "</table>";
+            tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");             //remove if u want links in your table
+            tab_text = tab_text.replace(/<img[^>]*>/gi, "");                 // remove if u want images in your table
+            tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, "");    // reomves input params
+            // console.log(tab_text); // aktivate so see the result (press F12 in browser)
+
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf("MSIE ");
+
+            // if Internet Explorer
+            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+                txtArea1.document.open("txt/html", "replace");
+                txtArea1.document.write(tab_text);
+                txtArea1.document.close();
+                txtArea1.focus();
+                sa = txtArea1.document.execCommand("SaveAs", true, "DataTableExport.xls");
+            }
+            else // other browser not tested on IE 11
+                sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
+
+            return (sa);
+        }
+
+
+    </script>
+</section>
+

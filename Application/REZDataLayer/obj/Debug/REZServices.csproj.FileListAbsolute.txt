@@ -1,0 +1,10 @@
+D:\BonoboApp\REZInventory\REZServices\bin\Debug\REZServices.dll
+D:\BonoboApp\REZInventory\REZServices\bin\Debug\REZServices.pdb
+D:\BonoboApp\REZInventory\REZServices\bin\Debug\REZCores.dll
+D:\BonoboApp\REZInventory\REZServices\bin\Debug\REZCores.pdb
+D:\BonoboApp\REZInventory\REZServices\obj\Debug\REZServices.csprojAssemblyReference.cache
+D:\BonoboApp\REZInventory\REZServices\obj\Debug\REZServices.csproj.CoreCompileInputs.cache
+D:\BonoboApp\REZInventory\REZServices\obj\Debug\REZServices.csproj.CopyComplete
+D:\BonoboApp\REZInventory\REZServices\obj\Debug\REZServices.dll
+D:\BonoboApp\REZInventory\REZServices\obj\Debug\REZServices.pdb
+D:\BonoboApp\REZInventory\REZServices\bin\Debug\DataObject.dll

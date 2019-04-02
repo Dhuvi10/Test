@@ -1,0 +1,526 @@
+﻿@model REZCores.OrderModel
+@{
+    ViewBag.Title = "OrderItem";
+}
+
+<section class="content">
+    <style>
+        .LockOff {
+            display: none;
+            visibility: hidden;
+        }
+
+        .modal-dialog {
+            width: 70%;
+        }
+
+        .LockOn {
+            display: block;
+            visibility: visible;
+            position: fixed;
+            z-index: 999;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            background-color: #FDFDFD;
+            height: 100%;
+            text-align: center;
+            padding-top: 150px;
+            filter: alpha(opacity=75);
+            opacity: 0.75;
+        }
+
+        .form-horizontal .control-label {
+            padding-left: 0px;
+        }
+    </style>
+
+    <ol class="breadcrumb">
+        <li>Operation</li>
+        <li>@Html.ActionLink("Order", "Index", "Ordering")</li>
+        <li class="active">Order Deatil</li>
+    </ol>
+    <div class="form-horizontal col-md-12">
+
+        <div id="divdetail" class="form-group">
+            <div class="col-md-2">
+                <b>Order No:</b><br />
+                @Html.EditorFor(model => model.OrderNo, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+            <div class="col-md-2">
+                <b>Delivery Date:</b><br />
+                @{
+                    string BDate = Model.BDate.ToShortDateString();
+                }
+                @Html.EditorFor(model => BDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BDate, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-md-2">
+                <b>Notes:</b><br />
+                @Html.EditorFor(model => model.Reference, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+            </div>
+
+
+            <div class="col-md-2">
+                <b>Cost Center:</b><br />
+                @Model.StoreName
+            </div>
+            <div class="col-md-2">
+                <b>Vendor Name:</b><br />
+                @Model.VendorName
+            </div>
+
+            <div class="col-md-1">
+                <b>Status:</b><br />
+                @{var st = Model.Status == 1 ? "Pending" : Model.Status == 2 ? "Saved" : "Booked";}
+                @st
+            </div>
+        </div>
+
+        <div id="divdetail" class="form-group">
+            <div class="col-md-2">
+                <b>Created By:</b><br />
+                @Model.CreatedBy
+            </div>
+            <div class="col-md-2">
+                <b>Created On:</b><br />
+                @Model.CreatedOn
+            </div>
+            <div class="col-md-2">
+                <b>Modified By:</b><br />
+                @Model.ModifiedBy
+            </div>
+            <div class="col-md-2">
+                <b>Modified On:</b><br />
+                @Model.ModifiedOn
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="box box-pane"></div>
+            @Html.HiddenFor(model => model.VendorId)
+            @Html.HiddenFor(model => model.OrderId)
+            @Html.HiddenFor(model => model.StoreId)
+            @Html.HiddenFor(model => model.BDate)
+            @if (Model.Status == 1 || Model.Status == 2)
+            {
+                <input type="submit" id="btnAdItem" value="Add Items" class="btn btn-default open-AddBookDialog" data-toggle="modal" data-target="#modal-default" />
+                <input type="button" id="btnSave" onclick="return SaveIOrder(2);" value="Save" class="btn btn-default" />
+                <input type="button" id="btnBook" onclick="return SaveIOrder(3);" value="Book" class="btn btn-default" />
+            }
+            @Html.ActionLink("Back", "Index", new { }, new { @class = "btn btn-default" })
+            <button id="btnGetExcel" value="GetExcel" class="btn btn-default" onclick="GetExcel();">Get Excel</button>
+        </div>
+        <div class="form-group">
+            <div class="box box-primary">
+                <div class="box-body" style="overflow:auto;max-height:400px">
+                    <table class="table" id="tblResult">
+                        <thead>
+                            <tr>
+                                <th>Item ID</th>
+                                <th>Item Name</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Price</th>
+                                <th>Net Total</th>
+                                <th>Total Tax</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblResultTbody">
+                            @*@if (@Model.lstOrderItemModel != null)
+                                {
+                                    foreach (var item in @Model.lstOrderItemModel)
+                                    {
+                                        <tr>
+                                            <td>@item.ItemCode<input type="text" id="ItemId1" class="hidden" value=@item.ItemId /><input type="text" id="TaxRate1" class="hidden" value=@item.TaxRate /></td>
+                                            <td>@item.ItemName</td>
+                                            <td><input type="text" id="ItemQty1" value=@item.Qty maxlength="10" />  </td>
+                                            <td>@item.UnitName</td>
+                                            <td><input type="text" id="ItemPrice1" value=@item.Price maxlength="10" readonly />  </td>
+                                            <td>@item.NetTotal</td>
+                                            <td>@item.TotalTax</td>
+                                            <td>@item.TotalAmount</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="8">No Records</td></tr>
+                                }*@
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                @*<th>Total</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th><input id="txtNetTotal" type="text" class="qty" maxlength="10" readonly /></th>
+        <th><input id="txtTotalTax" type="text" class="qty" maxlength="10" readonly /></th>
+        <th><input id="txtTotalAmount" type="text" class="qty" maxlength="10" readonly /></th>*@
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="modal fade" id="modal-default" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                                <h4 class="modal-title">Add Items</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-12" style="max-height:500px;overflow-y:auto;">
+                                            <div id="tblMappedResult">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="Save">Add Items</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div id="LockPanel" class="LockOff">
+        <h2>Please wait...</h2>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    <link href="~/Scripts/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <script>
+
+        function GetMappedItems() {
+            var obj = {};
+            obj.VendorId = $('#VendorId').val();
+            obj.OrderId = $('#OrderId').val();
+            $.ajax({
+                type: "POST",
+                url: "/Order/GetVendorCatalog",
+                data: JSON.stringify(obj),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response, status) {
+
+                    BindData(response);
+
+                    $("#LockPanel").removeClass("LockOn");
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+        }
+
+        function BindData(response) {
+            var model = $.parseJSON(response.msg);
+
+            $("#tblMappedResult").empty();
+            // create table
+            var $table = $('<table>');
+            // thead
+            $table.append('<thead>').children('thead')
+                .append('<tr />').children('tr').append('<th><b>Select</b></th><th><b>ItemCode</b></th><th><b>ItemName</b></th><th><b>Unit</b></th><th><b>Qty</b></th><th><b>Price</b></th>');
+
+            //tbody
+            var $tbody = $table.append('<tbody />').children('tbody');
+            if (model.length > 0) {
+                for (var i = 0; i < model.length; i++) {
+                    var flag = model[i].FixedorVariable;
+                    var st = "";
+                    if (flag = 1) {
+
+                        st = "<input type='number' id='ItemPrice' style='width:100px;' class='form-control price' value='" + model[i].Price + "' readonly />";
+                    }
+                    else { st = "<input type='number' id='ItemPrice' style='width:100px;' class='form-control price' value='" + model[i].Price + "'  />"; }
+
+                    $tbody.append('<tr />').children('tr:last')
+                        .append("<td><input type='checkbox' id='chk' /><input type='number' id='ItemId'   value='" + model[i].ItemId + "'  class='form-control hidden'/><input type='number' id='TaxRate'   value='" + model[i].TaxRate + "'  class='form-control hidden'/></td>")
+                        .append("<td> " + model[i].ItemCode + "</td>")
+                        .append("<td> " + model[i].ItemName + "</td>")
+                        .append("<td> " + model[i].UnitName + "</td>")
+                        .append("<td> <input type='number' id='ItemQty' style='width:100px;' class='form-control price' /></td>")
+                        .append("<td>" + st + " </td>")
+
+                }
+            }
+            // add table to dom
+            $table.appendTo('#tblMappedResult');
+            $('#tblMappedResult table').addClass("table table-bordered table-condensed table-hover table-striped");
+            $('.table').DataTable();
+        }
+
+        function SaveIOrder(Status) {
+            var ItemList = "";
+            var strMessage = '';
+            $('#tblResult tbody tr').each(function () {
+                var row = $(this).closest("tr");
+                var ItemId = row.find("#ItemId1").val();
+                var Qty = row.find("#ItemQty1").val();
+                var Price = row.find("#ItemPrice1").val();
+                var TaxRate = row.find("#TaxRate1").val();
+                if (Qty == "") {
+                    strMessage += "Please enter item qty.\n";
+                    row.find("[id=ItemQty]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+                }
+                else if (Number(Qty) <= 0) {
+                    strMessage += "Item qty should be greater than zero.\n";
+                    row.find("[id=ItemQty]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+
+                }
+                if (Price == "") {
+                    strMessage += "Please enter item price.\n";
+                    row.find("[id=ItemPrice]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+                }
+                else if (Number(Price) <= 0) {
+                    strMessage += "Item price should be greater than zero.\n";
+                    row.find("[id=ItemPrice]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+                }
+                if (strMessage != "") {
+                }
+                else {
+                    ItemList += "," + ItemId + "|" + Qty + "|" + Price + "|" + TaxRate;
+                }
+
+            });
+
+            if (strMessage == "") {
+                var obj = {};
+                obj.OrderNo = $("#OrderNo").val();;
+                obj.Reference = $("#Reference").val();;
+                obj.BDate = $("#BDate").val();;
+                obj.OrderId = $("#OrderId").val();
+                obj.Status = Status;
+                obj.strOrderItemModel = ItemList;
+                $.ajax({
+                    type: "POST",
+                    url: "/Order/SaveOrder",
+                    data: JSON.stringify(obj),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response, status) {
+                        if (response.success) {
+                            if (Status == 2) {
+                                GetItems();
+                                //  alert('Order Saved Successfully');
+                            }
+                            else { alert('Order Booked Successfully'); window.location.href = '/Order/Index'; }
+                        }
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+
+                    }
+                });
+            }
+        }    
+
+        function GetItems() {
+            var obj = {};
+            obj.OrderId = $("#OrderId").val();
+            $.ajax({
+                type: "POST",
+                url: "/Order/GetOrderItem",
+                data: JSON.stringify(obj),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (success, status) {
+                    BindItemData(success);
+                    $('table thead th').each(function (i) {
+                        calculateColumn(5);
+                        calculateColumn(7);
+                        calculateColumn(6);
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+        function BindItemData(success) {
+            $("#tblResultTbody").empty();
+            var tbodydata = "";
+            var model1 = $.parseJSON(success.success);
+            var model = model1.lstOrderItemModel;
+            if (model.length > 0) {
+                for (var i = 0; i < model.length; i++) {
+                    var flag = model[i].FixedorVariable;
+                    var st = "";
+                    if (flag = 1) {
+
+                        st = '<input type="number" id="ItemPrice" style="width:100px;" class="form-control price" value="' + model[i].Price + '" readonly />';
+                    }
+                    else { st = '<input type="number" id="ItemPrice" style="width:100px;" class="form-control price" value="' + model[i].Price + '"  />'; }
+                    tbodydata += '<tr>';
+                    tbodydata += '<td>' + model[i].ItemCode + '<input type="text" id="ItemId1" class="hidden" value="' + model[i].ItemId + '"/><input type="text" id="TaxRate1" class="hidden" value="' + model[i].TaxRate + '" /></td>';
+                    tbodydata += '<td> ' + model[i].ItemName + '</td>';
+                    tbodydata += "<td><input type='text' id='ItemQty1' value='" + model[i].Qty + "' maxlength='10' />  </td>";
+                    tbodydata += '<td> ' + model[i].UnitName + '</td>';
+                    tbodydata += '<td><input type="text" id="ItemPrice1" value="' + model[i].Price + '" maxlength="10" readonly />  </td>';
+                    tbodydata += '<td>' + model[i].NetTotal + ' </td>';
+                    tbodydata += '<td>' + model[i].TotalTax + ' </td>';
+                    tbodydata += '<td>' + model[i].TotalAmount + ' </td>';
+                    tbodydata += '</tr>';
+                }
+            }
+            $("#tblResultTbody").append(tbodydata);
+            //("#tblResult tbody").append(tbody);
+        }
+
+        $(document).ready(function () {
+            GetItems();
+            $('[name^=BDate]').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                // minDate: 0,
+                dateFormat: 'mm/dd/yy'
+            });
+
+            $('#Save').click(function () {
+                var ItemList = "";
+                var check = false;
+                var strMessage = '';
+                $('#tblMappedResult tbody tr').each(function () {
+                    var row = $(this).closest("tr");
+                    if (row.find("[id=chk]").prop('checked') == true) {
+                        check = true;
+                    }
+                });
+                if (check == false) {
+                    alert('Please select any item to add');
+                    return false;
+                }
+
+                $('#tblMappedResult tbody tr').each(function () {
+                    var row = $(this).closest("tr");
+                    var ItemId = row.find("#ItemId").val();
+                    var Qty = row.find("#ItemQty").val();
+                    var Price = row.find("#ItemPrice").val();
+                    var TaxRate = row.find("#TaxRate").val();
+                    if (row.find("[id=chk]").prop('checked') == true) {
+
+                        if (Qty == "") {
+                            strMessage += "Please enter item qty.\n";
+                            row.find("[id=ItemQty]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+                        }
+                        else if (Number(Qty) <= 0) {
+                            strMessage += "Item qty should be greater than zero.\n";
+                            row.find("[id=ItemQty]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+
+                        }
+
+                        if (Price == "") {
+                            strMessage += "Please enter item price.\n";
+                            row.find("[id=ItemPrice]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+                        }
+                        else if (Number(Price) <= 0) {
+                            strMessage += "Item price should be greater than zero.\n";
+                            row.find("[id=ItemPrice]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+                        }
+                        if (strMessage != "") {
+                        }
+                        else {
+                            $("#LockPanel").addClass("LockOn");
+                            ItemList += "," + ItemId + "|" + Qty + "|" + Price + "|" + TaxRate;
+                        }
+                    }
+                });
+
+                if (strMessage == "") {
+                    var obj = {};
+                    obj.OrderId = $("#OrderId").val();
+                    obj.Status = 1;
+                    obj.strOrderItemModel = ItemList;
+                    $.ajax({
+                        type: "POST",
+                        url: "/Order/SaveOrderItem",
+                        data: JSON.stringify(obj),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response, status) {
+                            if (response.success) {
+                                alert('Item Submit Successfully');
+                                GetMappedItems();
+                                GetItems();
+                            }
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                            $("#LockPanel").removeClass("LockOn");
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                            $("#LockPanel").removeClass("LockOn");
+
+                        }
+                    });
+                }
+
+            })
+
+            $(document).on("click", ".open-AddBookDialog", function () {
+                $("LockPanel").addClass("LockOn");
+                GetMappedItems();
+            });
+
+        });
+
+        function calculateColumn(index) {
+            var total = 0.0;
+            $('table  tr').each(function () {
+                var value = parseFloat($('td', this).eq(index).text());
+                if (!isNaN(value)) {
+                    total += value;
+                }
+            });
+            $('table  tfoot td').eq(index).text('Total: ' + total);
+        }
+
+    </script> 
+
+</section>
+

@@ -1,0 +1,77 @@
+﻿@model REZCores.LoginModel
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Home.cshtml";
+}
+<section class="content">
+    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form",id="loginForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="container body-content">
+            <div class="login-box">
+                <div class="login-logo">
+                    <a><b>REZ</b>Inventory</a>
+                </div>
+                <!-- /.login-logo -->
+                <div class="login-box-body">
+                    <p class="login-box-msg">Sign in</p>
+                    <hr>
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group has-feedback">
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Email" })
+                        @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            @*@Html.CheckBoxFor(m => m.RememberMe)
+                                @Html.LabelFor(m => m.RememberMe)*@
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-xs-4"><input type="submit" value="Log in" class="btn btn-default" /> </div>
+                        <!-- /.col -->
+                    </div>
+                </div>
+                <!-- /.login-box-body -->
+            </div>
+        </div>
+    }
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script>
+     $(document).ready(function () {
+  
+    function ForgotPassword() {
+        //$('#myForgotPassword').modal('show');
+        var url = "@Url.Action("ForgotPassword", "Login")";
+        window.location.href = url;
+        //return false;
+        }
+    });
+
+
+            $("#loginForm").submit(function () {
+                var username = $('#UserName').val().toLowerCase();
+        var password = $('#Password').val();
+        var RnD = $('#hdnRandomKey').val();
+        if (password == "") {
+            $('#EncryptedPassword').val(null);
+        }
+        else {
+            var abc = (username + password);
+            var hash = CryptoJS.SHA256(username + password);
+            var Newhash = CryptoJS.SHA256(RnD + hash);
+            $('#Password').val(Newhash);
+            //$('#Password').val(Newhash);
+
+        }
+        return true;
+    });
+        </script>
+    }
+</section>

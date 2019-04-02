@@ -1,0 +1,200 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+
+<section class="content">
+    <ol class="breadcrumb">
+        <li>Operation</li>
+        <li>@Html.ActionLink("Stock Taking", "Index", "StockTaking")</li>
+        <li class="active">Add</li>
+    </ol>
+    <div class="form-horizontal col-md-3 ">
+
+        <div class="form-group">
+            <div class="col-md-12">
+                <b>Select Cost Center:</b> <span style="color: red;">* </span>
+                @Html.DropDownList("Store", null, "Cost Center", htmlAttributes: new { @class = "form-control" })
+                @*<select id="ddlStore" class="form-control"></select>*@
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            <div class="col-md-12">
+                <b>Stock Taking Type:</b> <span style="color: red;">* </span>
+                @Html.DropDownList("StockTakenType", null, "Stock Taking Type", htmlAttributes: new { @class = "form-control" })
+                @*<select id="ddlStocktakingType" class="form-control"></select>*@
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            <div class="col-md-12">
+                <label class="control-label" for="">
+                    <b>Date:</b><span style="color: red;"> * </span>
+                </label>
+                <input class="form-control mytablecell" type="text" id="txtdate" placeholder='mm/dd/yyyy' autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-12">
+                <label class="control-label" for="">
+                    <b>Inventory Time:</b> <span style="color: red;">* </span>
+                </label>
+                <ul>
+                    <li>
+                        <input type="radio" id="rbStartOfday" name="inventoryTime" value="1" /> Start of day (SOD)
+                    </li>
+                    <li>
+                        <input type="radio" id="rbMidDay" name="inventoryTime" value="2" />Mid-Day
+                    </li>
+                    <li>
+                        <input type="radio" id="rbStartOfDate" name="inventoryTime" value="3" checked />End of Day (EOD)
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input id="hdnMinDate" type="hidden" value="@ViewBag.MinDate" />
+            <input id="hdnDayofWeek" type="hidden" value="@ViewBag.DayofWeek" />
+            <input id="hdnDateofMonth" type="hidden" value="@ViewBag.DateofMonth" />
+            <div class="col-md-12">
+                <button id="btnSubmit" class="btn btn-default">Create</button>
+                @Html.ActionLink("Back to List", "Index", new { }, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+
+    <div class="glow-alert" style="display: none;"></div>
+    @Scripts.Render("~/bundles/jquery")
+    <link href="~/Scripts/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-duallistbox.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.bootstrap-duallistbox.js"></script>
+
+    <script>
+
+        function alertGlow(msg) {
+            $(".glow-alert").html(msg);
+            $(".glow-alert").delay(200).fadeIn().delay(4000).fadeOut();
+        };
+
+        $("#btnSubmit").click(function () {
+            var strMessage = ""; var strMessage1 = "error";
+
+            var StoreId = $('#Store').val();
+            var StocktakingTypeId = $('#StockTakenType').val();
+            var InventoryTime = $("input[name='inventoryTime']:checked").val();
+            var BDate = $('#txtdate').val();
+
+            if (StoreId == "") {
+                strMessage += "Please select Cost Center.\n";
+            }
+            if (StocktakingTypeId == "") {
+                strMessage += "Please select Stock Taking Type.\n";
+            }
+            if (BDate == "") {
+                strMessage += "Please select date.\n";
+            }
+            if (InventoryTime == "") {
+                strMessage += "Please select Inventory Time.\n";
+            }
+            if (strMessage != "") {
+                alertGlow(strMessage);
+                return false;
+            }
+            else {
+                var obj1 = {};
+                obj1.StoreId = StoreId;
+                obj1.StocktakingTypeId = StocktakingTypeId;
+                obj1.InventoryTime = InventoryTime;
+                obj1.BDate = BDate;
+                $.ajax({
+                    type: "GET",
+                    url: "/StockTaking/CheckInventory",
+                    data: JSON.stringify(obj1),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response, status) {
+                        if (response.success == 1) {
+                            alertGlow(response.msg)
+                        }
+                        else {
+                            var obj = {};
+                            obj.StoreId = StoreId;
+                            obj.StocktakingTypeId = StocktakingTypeId;
+                            obj.InventoryTime = InventoryTime;
+                            obj.BDate = BDate;
+                            obj.Status = 1;
+                            obj.StockTakingId = 0;
+                            $.ajax({
+                                type: "POST",
+                                url: "/StockTaking/Create",
+                                data: JSON.stringify(obj),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (response, status) {
+                                    if (response.success) {
+                                        var res1 = response.StockTakingId.replace("\"", "");
+                                        var res = res1.split("|");                                        
+                                        if (res[1].replace("\"", "") == "") {
+                                            alertGlow('Inventory Create Successfully')
+                                            window.location.href = '/StockTaking/CountSheet?StockTakingId=' + res[0];
+                                        }
+                                        else {
+                                            alertGlow(res[1])
+                                        }                                       
+                                    }
+                                   
+                                },
+                                failure: function (response) {
+                                    alertGlow(response.responseText);
+                                },
+                                error: function (response) {
+                                    alertGlow(response.responseText);
+                                }
+                            });
+                            return false;
+                        }
+                    },
+                    failure: function (response) {
+                        alertGlow(response.responseText);
+                    },
+                    error: function (response) {
+                        alertGlow(response.responseText);
+                    }
+                });
+            }
+        })
+
+        $(document).ready(function () {
+
+            var Mindt = $("#hdnMinDate").val();
+            $('body').on('focus', ".mytablecell", function () {
+                $(this).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: 'mm/dd/yy'
+                });
+            });
+            $(".mytablecell").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                maxDate: 0,
+                minDate: Mindt,
+                dateFormat: 'mm/dd/yy'
+            });
+            $(".mytablecell").datepicker("setDate", new Date());
+
+        });
+
+    </script>
+
+</section>
+

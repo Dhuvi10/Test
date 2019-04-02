@@ -1,0 +1,307 @@
+﻿@model REZCores.OrderModel
+@{
+
+    ViewBag.Title = "Receive Item";
+}
+
+<section class="content">
+
+
+    <ol class="breadcrumb">
+        <li>Operation</li>
+        <li>@Html.ActionLink("Order", "Index", "Ordering")</li>
+        <li class="active">Order Deatil</li>
+    </ol>
+    <div class="form-horizontal col-md-12">
+
+        <div id="divdetail" class="form-group">
+            <div class="col-md-2">
+                <b>Order No:</b><br />
+                @Model.OrderNo
+            </div>
+            <div class="col-md-2">
+                <b>Cost Center:</b><br />
+                @Model.StoreName
+            </div>
+            <div class="col-md-2">
+                <b>Vendor Name:</b><br />
+                @Model.VendorName
+            </div>
+
+
+            <div class="col-md-2">
+                <b>Delivery Date:</b><br />
+                @{
+                    string BDate = Model.BDate.ToShortDateString();
+                }
+                @Html.EditorFor(model => BDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BDate, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-md-2">
+                <b>Notes:</b><br />
+                @Html.EditorFor(model => model.Reference, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-2">
+                <b>Receipt:</b><br />
+                @Html.EditorFor(model => model.ReceiptNo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div id="divdetail" class="form-group">
+            <div class="col-md-2">
+                <b>Created By:</b><br />
+                @Model.CreatedBy
+            </div>
+            <div class="col-md-2">
+                <b>Created On:</b><br />
+                @Model.CreatedOn
+            </div>
+            <div class="col-md-2">
+                <b>Modified By:</b><br />
+                @Model.ModifiedBy
+            </div>
+            <div class="col-md-2">
+                <b>Modified On:</b><br />
+                @Model.ModifiedOn
+            </div>
+            <div class="col-md-1">
+                <b>Status:</b><br />
+                @{var st = Model.Status == 1 ? "Pending" : Model.Status == 2 ? "Saved" : "Booked";}
+                @st
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="box box-pane"></div>
+            @Html.HiddenFor(model => model.OrderId)
+            @if (Model.Status == 1 || Model.Status == 2)
+            {
+                <input type="button" id="btnSave" onclick="return SaveIOrder(4);" value="Save" class="btn btn-default" />
+                <input type="button" id="btnBook" onclick="return SaveIOrder(5);" value="Book" class="btn btn-default" />
+            }
+            @Html.ActionLink("Back", "Index", new { }, new { @class = "btn btn-default" })
+            <button id="btnGetExcel" value="GetExcel" class="btn btn-default" onclick="GetExcel();">Get Excel</button>
+        </div>
+        <div class="form-group">
+            <div class="box box-primary">
+                <div class="box-body" style="overflow:auto;max-height:400px">
+                    <table class="table" id="tblResult">
+                        <thead>
+                            <tr>
+                                <th>Item ID</th>
+                                <th>Item Name</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Price</th>
+                                <th>Net Total</th>
+                                <th>Total Tax</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblResultTbody">
+                            @if (@Model.lstOrderItemModel != null)
+                            {
+                                foreach (var item in @Model.lstOrderItemModel)
+                                {
+                            <tr>
+                                <td>@item.ItemCode<input type="text" id="ItemId1" class="hidden" value=@item.ItemId /><input type="text" id="TaxRate1" class="hidden" value=@item.TaxRate /></td>
+                                <td>@item.ItemName</td>
+                                <td><input type="text" id="ItemQty1" value=@item.Qty maxlength="10" />  </td>
+                                <td>@item.UnitName</td>
+                                <td><input type="text" id="ItemPrice1" value=@item.Price maxlength="10" disabled />  </td>
+                             
+                                <td>@item.NetTotal</td>
+                                <td>@item.TotalTax</td>
+                                <td>@item.TotalAmount</td>
+                            </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="8">No Records</td></tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    <link href="~/Scripts/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+
+    <script>
+
+        function SaveIOrder(Status) {
+
+            var ItemList = "";
+            var strMessage = '';
+
+            $('#tblResult tbody tr').each(function () {
+                var row = $(this).closest("tr");
+                var ItemId = row.find("#ItemId1").val();
+                var Qty = row.find("#ItemQty1").val();
+                var Price = row.find("#ItemPrice1").val();
+                var TaxRate = row.find("#TaxRate1").val();
+                if (Qty == "") {
+                    strMessage += "Please enter item qty.\n";
+                    row.find("[id=ItemQty]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+                }
+                else if (Number(Qty) <= 0) {
+                    strMessage += "Item qty should be greater than zero.\n";
+                    row.find("[id=ItemQty]").css({ "border-color": "#900", "border-width": "1px", "border-style": "solid" });
+
+                }               
+                if (strMessage != "") {
+                }
+                else {
+                    ItemList += "," + ItemId + "|" + Qty + "|" + Price + "|" + TaxRate;
+                }
+
+            });
+
+            if (strMessage == "") {
+                var obj = {};
+                obj.ReceiptNo = $("#ReceiptNo").val();;
+                obj.Reference = $("#Reference").val();;
+                obj.BDate = $("#BDate").val();;
+                obj.OrderId = $("#OrderId").val();
+                obj.Status = Status;
+                obj.strOrderItemModel = ItemList;
+                $.ajax({
+                    type: "POST",
+                    url: "/Receiving/SaveReceiving",
+                    data: JSON.stringify(obj),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response, status) {
+                        if (response.success) {
+                            if (Status == 2) {
+                                GetItems();
+                                //  alert('Order Saved Successfully');
+                            }
+                            else { alert('Order Booked Successfully'); window.location.href = '/Order/Index'; }
+                        }
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+
+                    }
+                });
+            }
+        }
+
+
+
+
+        function GetItems() {
+            var obj = {};
+            obj.OrderId = $("#OrderId").val();
+            $.ajax({
+                type: "POST",
+                url: "/Order/GetOrderItem",
+                data: JSON.stringify(obj),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (success, status) {
+                    BindItemData(success);
+                    $('table thead th').each(function (i) {
+                        calculateColumn(5);
+                        calculateColumn(7);
+                        calculateColumn(6);
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+        function BindItemData(success) {
+            $("#tblResultTbody").empty();
+            var tbodydata = "";
+            var model1 = $.parseJSON(success.success);
+            var model = model1.lstOrderItemModel;
+            if (model.length > 0) {
+                for (var i = 0; i < model.length; i++) {
+                    var flag = model[i].FixedorVariable;
+                    var st = "";
+                    if (flag = 1) {
+
+                        st = '<input type="number" id="ItemPrice" style="width:100px;" class="form-control price" value="' + model[i].Price + '" readonly />';
+                    }
+                    else { st = '<input type="number" id="ItemPrice" style="width:100px;" class="form-control price" value="' + model[i].Price + '"  />'; }
+                    tbodydata += '<tr>';
+                    tbodydata += '<td>' + model[i].ItemCode + '<input type="text" id="ItemId1" class="hidden" value="' + model[i].ItemId + '"/><input type="text" id="TaxRate1" class="hidden" value="' + model[i].TaxRate + '" /></td>';
+                    tbodydata += '<td> ' + model[i].ItemName + '</td>';
+                    tbodydata += "<td><input type='text' id='ItemQty1' value='" + model[i].Qty + "' maxlength='10' />  </td>";
+                    tbodydata += '<td> ' + model[i].UnitName + '</td>';
+                    tbodydata += '<td><input type="text" id="ItemPrice1" value="' + model[i].Price + '" maxlength="10" readonly />  </td>';
+                    tbodydata += '<td>' + model[i].NetTotal + ' </td>';
+                    tbodydata += '<td>' + model[i].TotalTax + ' </td>';
+                    tbodydata += '<td>' + model[i].TotalAmount + ' </td>';
+                    tbodydata += '</tr>';
+                }
+            }
+            $("#tblResultTbody").append(tbodydata);
+            //("#tblResult tbody").append(tbody);
+        }
+
+        $(document).ready(function () {
+            $('[name^=BDate]').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                // minDate: 0,
+                dateFormat: 'mm/dd/yy'
+            });
+
+
+            $('table thead th').each(function (i) {
+                calculateColumn(5);
+                calculateColumn(7);
+                calculateColumn(6);
+            });
+            //GetItems();
+            
+        });
+
+        function calculateColumn(index) {
+            var total = 0.0;
+            $('table  tr').each(function () {
+                var value = parseFloat($('td', this).eq(index).text());
+                if (!isNaN(value)) {
+                    total += value;
+                }
+            });
+            $('table  tfoot td').eq(index).text('Total: ' + total);
+        }
+    </script>
+
+
+</section>

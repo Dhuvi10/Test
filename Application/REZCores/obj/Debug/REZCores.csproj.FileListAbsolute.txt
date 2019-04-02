@@ -1,0 +1,5 @@
+D:\2019\Sandeep\Sandeep_New\26032019\TechRydeInventoryApp\Application\REZCores\bin\Debug\REZCores.dll
+D:\2019\Sandeep\Sandeep_New\26032019\TechRydeInventoryApp\Application\REZCores\bin\Debug\REZCores.pdb
+D:\2019\Sandeep\Sandeep_New\26032019\TechRydeInventoryApp\Application\REZCores\obj\Debug\REZCores.csproj.CoreCompileInputs.cache
+D:\2019\Sandeep\Sandeep_New\26032019\TechRydeInventoryApp\Application\REZCores\obj\Debug\REZCores.dll
+D:\2019\Sandeep\Sandeep_New\26032019\TechRydeInventoryApp\Application\REZCores\obj\Debug\REZCores.pdb

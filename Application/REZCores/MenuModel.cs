@@ -14,5 +14,6 @@ namespace REZCores
         public int  ParentId { get; set; }
         public string ActionName { get; set; }
         public int ActionId { get; set; }
+        public string TargetUrl { get; set; }
     }
 }

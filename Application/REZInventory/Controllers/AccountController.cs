@@ -42,6 +42,7 @@ namespace REZInventory.Controllers
             // var token = ValidateUser(model);
             var jsonString = JsonConvert.SerializeObject(model);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
             HttpResponseMessage responseMessage = client.PostAsync(StVariable.ApiUri + "/api/account/Authenticate", content).Result;
             if (responseMessage.IsSuccessStatusCode)
             {
@@ -53,6 +54,7 @@ namespace REZInventory.Controllers
                 // FormsAuthentication.SetAuthCookie(data.UserId.ToString(), false);
                 Session["AuthToken"] = data.AuthToken;
                 Session["UserId"] = data.UserId;
+                Session["RoleId"] = data.UserId;
                 Response.Cookies.Add(new HttpCookie("AuthToken", data.AuthToken));
                 if (this.Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
                     && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
@@ -126,9 +128,9 @@ namespace REZInventory.Controllers
 
         public ActionResult LogOff()
         {
+            Response.Cookies.Clear();
             FormsAuthentication.SignOut();
-
-            return this.RedirectToAction("Index", "Home");
+            return this.RedirectToAction("Login", "Account");
         }
     }
 }

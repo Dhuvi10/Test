@@ -4,33 +4,61 @@
 
     foreach (var item in siteMenu.Where(x => x.ParentId.Equals(parentId)))
     {
-     
-            var submenu = siteMenu.Where(a => a.ParentId.Equals(item.Id)).Count();
-            if (submenu > 0)
-            {
+
+        var submenu = siteMenu.Where(a => a.ParentId.Equals(item.Id)).Count();
+        if (submenu > 0)
+        {
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@item.Name <span class="caret"></span></a>
+                <a href="@item.TargetUrl" class="dropdown-toggle" data-toggle="dropdown">@item.Name <span class="caret"></span></a>
                 @if (submenu > 0)
                 {
-                    <ul class="dropdown-menu" role="menu">
+                    <span class="collapse collapsible">&nbsp;</span>
+                    <ul class="dropdown-menu" role="menu" style="display:none">
                         @MenuLabel.GetTreeView(siteMenu, item.Id)
                         @* Recursive Call for Populate Sub items here*@
                     </ul>
                 }
             </li>
 
-            @*<span class="collapse collapsible">&nbsp;</span>*@
+
         }
         else
         {
             <li>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@item.Name</a>
+                <span style="width:15px; display:inline-block">&nbsp;</span>
+                <a href="@item.TargetUrl" class="dropdown-toggle">@item.Name</a>
             </li>
 
             @*<span style="width:15px; display:inline-block">&nbsp;</span>*@
         }
-            @*<span><a href="#">@item.Name</a></span>*@
-          
-        }
+        @*<span><a href="#">@item.Name</a></span>*@
+
+    }
 }
-           
+@helper GetTreeViewMenu(List<REZCores.MenuModel> siteMenu, int parentId)
+{
+
+    foreach (var item in siteMenu.Where(x => x.ParentId.Equals(parentId)))
+    {
+        <li>
+            @{var submenu = siteMenu.Where(a => a.ParentId.Equals(item.Id)).Count();}
+            @if (submenu > 0)
+            {
+                <span class="collapse collapsible">&nbsp;</span>
+            }
+            else
+            {
+                <span style="width:15px; display:inline-block">&nbsp;</span>
+            }
+            <span><a href="#" style="color:white">@item.Name</a></span>
+            @if (submenu > 0)
+            {
+                <ul>
+                    @MenuLabel.GetTreeViewMenu(siteMenu, item.Id)
+                    @* Recursive  Call for Populate Sub items here*@
+                </ul>
+            }
+
+        </li>
+    }
+}

@@ -22,7 +22,7 @@ namespace REZInventory.Controllers
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", objSessionManager.AuthToken);
         }
-    
+    [CustomAuthorized("M00001")]
         public async Task<ActionResult> Index()
         {
             // client.DefaultRequestHeaders.Authorization  = new AuthenticationHeaderValue("Bearer", objSessionManager.AuthToken);
@@ -39,6 +39,7 @@ namespace REZInventory.Controllers
 
             return View(model);
         }
+        [CustomAuthorized("M00001")]
         public ActionResult Create()
         {
             return View();

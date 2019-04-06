@@ -100,7 +100,7 @@ namespace REZInventory.Controllers
         }
         protected override void Initialize(RequestContext requestContext)
         {
-            base.Initialize(requestContext);
+            
             HttpClient client;
             SessionManager objSessionManager = new SessionManager();
             client = new HttpClient();
@@ -109,17 +109,18 @@ namespace REZInventory.Controllers
             client.DefaultRequestHeaders.Authorization
                      = new AuthenticationHeaderValue("Bearer", objSessionManager.AuthToken);
             string url = StVariable.ApiUri + "/api/Menu/GetMenu?RoleId=1";
-           
+
             client.BaseAddress = new Uri(url);
-            HttpResponseMessage responseMessage =  client.GetAsync(url).Result;
+            HttpResponseMessage responseMessage = client.GetAsync(url).Result;
             if (responseMessage.IsSuccessStatusCode)
             {
                 var responseData = responseMessage.Content.ReadAsStringAsync().Result;
-               ViewBag.Menu = JsonConvert.DeserializeObject<List<MenuModel>>(responseData);
+                ViewBag.Menu = JsonConvert.DeserializeObject<List<MenuModel>>(responseData);
             }
+            base.Initialize(requestContext);
             // return Json(order);
 
-           
+
             //MenuModel objMenu = new MenuModel();
             //MenuService objmenuservice = new MenuService();
             //objMenu.GetMenuList = objmenuservice.GetUserMenu(objSession.UserID, objSession.RoleId);

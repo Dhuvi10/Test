@@ -1,0 +1,27 @@
+﻿@helper GetTreeViewMenu(List<REZCores.MenuModel> siteMenu, int parentId)
+{
+
+foreach (var item in siteMenu.Where(x => x.ParentId.Equals(parentId)))
+{
+        <li>
+            @{var submenu = siteMenu.Where(a => a.ParentId.Equals(item.Id)).Count();}
+            @if (submenu > 0)
+            {
+                <span class="collapse collapsible">&nbsp;</span>
+            }
+            else
+            {
+                <span style="width:15px; display:inline-block">&nbsp;</span>
+            }
+            <span><a href="#">@item.Name</a></span>
+            @if (submenu > 0)
+            {
+                <ul>
+                    @MenuLabel.GetTreeViewMenu(siteMenu, item.Id)
+                    @* Recursive  Call for Populate Sub items here*@
+                </ul>
+            }
+
+        </li>
+                    }
+                }

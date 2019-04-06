@@ -26,7 +26,7 @@ namespace REZRepository
                     MenuCode = x.Field<string>("MenuCode"),
                     ActionId = x.Field<int>("ActionId"),
                     ActionName = x.Field<string>("ActionName"),
-                    
+                    TargetUrl = x.Field<string>("TargetURL"),
                 }).ToList();
                 
             }

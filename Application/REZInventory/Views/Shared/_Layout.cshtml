@@ -29,6 +29,23 @@
         .nav-tabs .dropdown-menu, .nav-pills .dropdown-menu, .navbar .dropdown-menu {
             margin-top: 0;
         }
+        /*.collapse {
+            width: 15px;
+            background-image: url('/Images/ui-icons_454545_256x240.png');
+            background-repeat: no-repeat;
+            background-position: -36px -17px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+      .expand {
+            width: 15px;
+            background-image: url('/Images/ui-icons_454545_256x240.png');
+            background-repeat: no-repeat;
+            background-position: -50px -17px;
+            display: inline-block;
+            cursor: pointer;
+        }*/
     </style>
 </head>
 <body class="hold-transition skin-blue layout-top-nav">
@@ -47,10 +64,7 @@
                                 <i class="fa fa-bars"></i>
                             </button>
                         </div>
-                       
-                        <!-- Collect the nav links, forms, and other content for toggling -->
                         <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
-
                             @if (ViewBag.Menu != null)
                             {
                                 <ul class="nav navbar-nav">
@@ -62,45 +76,50 @@
                                     @MenuLabel.GetTreeView(@MID, MID.FirstOrDefault().ParentId)
                                 </ul>
                             }
-                            @*<li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Masters <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-                <li id="unit">@Html.ActionLink("Unit", "Index", "Unit")</li>
-                <li id="major">@Html.ActionLink("Major Names", "Index", "MajorItems")</li>
-                <li id="minor">@Html.ActionLink("Minor Names", "Index", "MinorItems")</li>
-                <li id="store">@Html.ActionLink("Cost Center", "Index", "Store")</li>
-                <li id="WasteReason">@Html.ActionLink("Waste Reason Master", "Index", "WasteReason")</li>
-                <li id="vendor">@Html.ActionLink("Vendor", "Index", "Vendor")</li>
-            </ul>
-        </li>
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Mapping <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-                <li id="minor">@Html.ActionLink("Master Menu", "MasterMenuList", "MenuStoremapping")</li>
-                <li id="minor">@Html.ActionLink("Menu-Store", "MenuList", "MenuStoremapping")</li>
-                <li id="minor">@Html.ActionLink("Menu-Recipe", "Index", "MenuRecipe")</li>
-                <li id="Production">@Html.ActionLink("Production Recipe", "Index", "MappingRecipeProdItem")</li>
-            </ul>
-        </li>
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operations <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-                <li id="vendor">@Html.ActionLink("Stock Taking", "Index", "StockTaking")</li>
-                <li id="vendor">@Html.ActionLink("Ordering", "Index", "Order")</li>
-                <li id="vendor">@Html.ActionLink("Receiving", "Index", "Receiving")</li>
-                <li id="vendor">@Html.ActionLink("Transfer In", "Index", "StockReq")</li>
-                <li id="vendor">@Html.ActionLink("Transfer Out", "Index", "StockTransfer")</li>
+                        </div>
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
 
-                <li id="vendor">@Html.ActionLink("Raw Waste", "Index", "WasteDetails")</li>
-                <li id="vendor">@Html.ActionLink("Complete Waste", "MenuWasteList", "WasteDetails")</li>
-                <li id="vendor">@Html.ActionLink("Stock On Hand", "Index", "StockOnHand")</li>
-                <li id="Production">@Html.ActionLink("Production Booking", "Index", "Production")</li>
-            </ul>
-        </li>
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Report <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-                @*<li id="vendor">@Html.ActionLink("Waste By Group", "WasteReportByGroup", "WasteDetails")</li>
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Masters <span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li id="unit">@Html.ActionLink("Unit", "Index", "Unit")</li>
+                                        <li id="major">@Html.ActionLink("Major Names", "Index", "MajorItems")</li>
+                                        <li id="minor">@Html.ActionLink("Minor Names", "Index", "MinorItems")</li>
+                                        <li id="store">@Html.ActionLink("Cost Center", "Index", "Store")</li>
+                                        <li id="WasteReason">@Html.ActionLink("Waste Reason Master", "Index", "WasteReason")</li>
+                                        <li id="vendor">@Html.ActionLink("Vendor", "Index", "Vendor")</li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Mapping <span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li id="minor">@Html.ActionLink("Master Menu", "MasterMenuList", "MenuStoremapping")</li>
+                                        <li id="minor">@Html.ActionLink("Menu-Store", "MenuList", "MenuStoremapping")</li>
+                                        <li id="minor">@Html.ActionLink("Menu-Recipe", "Index", "MenuRecipe")</li>
+                                        <li id="Production">@Html.ActionLink("Production Recipe", "Index", "MappingRecipeProdItem")</li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operations <span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li id="vendor">@Html.ActionLink("Stock Taking", "Index", "StockTaking")</li>
+                                        <li id="vendor">@Html.ActionLink("Ordering", "Index", "Order")</li>
+                                        <li id="vendor">@Html.ActionLink("Receiving", "Index", "Receiving")</li>
+                                        <li id="vendor">@Html.ActionLink("Transfer In", "Index", "StockReq")</li>
+                                        <li id="vendor">@Html.ActionLink("Transfer Out", "Index", "StockTransfer")</li>
+
+                                        <li id="vendor">@Html.ActionLink("Raw Waste", "Index", "WasteDetails")</li>
+                                        <li id="vendor">@Html.ActionLink("Complete Waste", "MenuWasteList", "WasteDetails")</li>
+                                        <li id="vendor">@Html.ActionLink("Stock On Hand", "Index", "StockOnHand")</li>
+                                        <li id="Production">@Html.ActionLink("Production Booking", "Index", "Production")</li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Report <span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        @*<li id="vendor">@Html.ActionLink("Waste By Group", "WasteReportByGroup", "WasteDetails")</li>
                             <li id="vendor">@Html.ActionLink("Waste Report", "WasteReportByItem", "WasteDetails")</li>
                             <li id="vendor">@Html.ActionLink("COS Report", "COSByCostCenters", "StockOnHand")</li>
                             <li id="vendor">@Html.ActionLink("Theo Quantity", "Index", "TheoQuantity")</li>
@@ -129,7 +148,7 @@
                                 </ul>
                             </li>
 
-                            </ul>*@
+                            </ul>
                         </div>
                         <!-- /.navbar-collapse -->
                         <!-- Navbar Right Menu -->
@@ -160,8 +179,8 @@
                             </li>*@
 
 
-                                            <!-- Menu Body -->
-                                        </ul>
+                                        <!-- Menu Body -->
+                                    </ul>
 
                                     </a>
                                 </li>                          <!-- Menu Toggle Button -->
@@ -221,6 +240,17 @@
     <script src="~/Scripts/jquery-ui.js"></script>
     <script src="~/Scripts/jquery.dataTables.min.js"></script>
     @RenderSection("scripts", required: false)
-
+    
+    <script>
+        $(document).ready(function () {
+            //$("#menu .treeview li>ul").css('display', 'none'); // Hide all 2-level ul
+            $("#navbar-collapse .collapsible").click(function (e) {
+                e.preventDefault();
+                $(this).toggleClass();
+                $(this).closest('li').children('ul').slideToggle();
+            });
+        });
+        
+    </script>
 </body>
 </html>

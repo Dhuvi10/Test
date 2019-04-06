@@ -16,8 +16,7 @@ namespace REZAPIInventory.Controllers
 
         public AccountController()
         {
-            // Utility.ConnectionString = ConfigurationManager.ConnectionStrings["REZLoginConn"].ConnectionString;
-            // Utility.ConnectionString = ConfigurationManager.ConnectionStrings["REZInventoryConn"].ConnectionString;
+             Utility.ConnectionString = ConfigurationManager.ConnectionStrings["REZLoginConn"].ConnectionString;
         }
         BLUser user = new BLUser();
         [HttpPost]
@@ -26,7 +25,6 @@ namespace REZAPIInventory.Controllers
         public IHttpActionResult Authenticate([FromBody] LoginModel model)
         {
            Utility.ConnectionString = ConfigurationManager.ConnectionStrings["REZLoginConn"].ConnectionString;
-            // var loginResponse = new LoginResponse { };
 
             //bool isUsernamePasswordValid = false;
             var userResponse = user.Login(model);
@@ -78,6 +76,8 @@ namespace REZAPIInventory.Controllers
                new Claim("UserId",model.UserId.ToString()),
                 new Claim("ConnectionString", "Data Source="+model.ServerName+";Initial Catalog="+model.DbName+";user id ="+model.DbUserName+"; password="+model.Password+"")
             });
+            Utility.ConnectionString = ConfigurationManager.ConnectionStrings["REZLoginConn"].ConnectionString;
+            Utility.ConnectionString = "Data Source=" + model.ServerName + ";Initial Catalog=" + model.DbName + ";user id =" + model.DbUserName + "; password=" + model.Password + "";
             // caims.Add(new Claim("desgId", _dtResp.Tables[0].Rows[0]["Designation_Id"].ToString()));
 
             const string sec = "401b09eab3c013d4ca54922bb802bec8fd5318192b0a75f201d8b3727429090fb337591abd3e44453b954555b7a0812e1081c39b740293f765eae731f5a65ed1";

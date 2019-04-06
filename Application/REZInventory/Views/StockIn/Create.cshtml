@@ -1,0 +1,77 @@
+﻿@model REZCores.StockInOutModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<section class="content">
+    <ol class="breadcrumb">
+        <li>Operations</li>
+        <li>@Html.ActionLink("Stock In", "Index", "StockIn")</li>
+        <li class="active">Add Stock Request</li>
+    </ol>
+    @using (Html.BeginForm("SaveStockRequest", "StockIn", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal col-md-3"></div>
+        <div class="form-horizontal col-md-4">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <div class="col-md-12">
+                    <b>Source Store:</b> <span style="color: red;">* </span>
+                    @Html.DropDownList("Out_StoreId", null, "Select Cost Center", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Out_StoreId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    <b>Target Store:</b> <span style="color: red;">* </span>
+                    @Html.DropDownList("In_StoreId", null, "Select Cost Center", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.In_StoreId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    <b>Delivery Date:</b> <span style="color: red;">* </span>
+                    @Html.EditorFor(model => model.BDate, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
+                    @Html.ValidationMessageFor(model => model.BDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    <b>Reference:</b>
+                    @Html.EditorFor(model => model.Reference, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                    @Html.ActionLink("Back", "Index", new { }, new { @class = "btn btn-default" })
+                </div>
+            </div>
+        </div>
+    }
+
+    @Scripts.Render("~/bundles/jquery")
+    <link href="~/Scripts/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            $('[name^=BDate]').datepicker({
+                changeMonth: true,
+                changeYear: true,
+               // minDate: 0,
+                dateFormat: 'mm/dd/yy'
+            });
+        });
+    </script>
+</section>

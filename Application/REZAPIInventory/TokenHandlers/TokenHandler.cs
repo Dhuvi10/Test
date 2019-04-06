@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
@@ -34,6 +35,7 @@ namespace REZAPIInventory.TokenHandlers
             if (!TryRetrieveToken(request, out token))
             {
                 statusCode = HttpStatusCode.Unauthorized;
+                REZServices.Utility.ConnectionString = ConfigurationManager.ConnectionStrings["REZLoginConn"].ConnectionString;
                 //allow requests with no token - whether a action method needs an authentication can be set with the claimsauthorization attribute
                 return base.SendAsync(request, cancellationToken);
             }
